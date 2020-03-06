@@ -4,7 +4,7 @@ requests
 
 datetime
 sqlalchemy
-
+psycopg2
 apscheduler
 gunicorn==19.7.1
 
