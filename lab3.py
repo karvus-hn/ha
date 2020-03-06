@@ -11,7 +11,6 @@ from sqlalchemy import create_engine
 from sqlalchemy import Table, Column
 from sqlalchemy import MetaData, String, Integer,DateTime, ForeignKey
 
-some_text=''
 
 TOKEN = '1059696616:AAGcWDOvkpG2OFabcnFv9VZklF1Lj5ximxc'
 API_URL = 'https://api.telegram.org/bot1059696616:AAGcWDOvkpG2OFabcnFv9VZklF1Lj5ximxc'
@@ -104,12 +103,10 @@ def GRound(chat_id,params):
 
 @app.route('/incoming', methods=['POST'])
 def webhook():
-	global some_text
     if request.method == 'POST':
         queryA=db.session.query(user)
         queryB=db.session.query(learning)
         update = request.get_json()
-		some_text+="webhook income\n"
         if "message" in update:
             text = update["message"]["text"]
             chat_id = update["message"]["chat"]["id"]
@@ -166,8 +163,8 @@ def webhook():
 
 @app.route('/init')
 def ind():
-	global some_text
-    return print(sometext)
+
+    return ''
 
 @app.route('/')
 def index():
