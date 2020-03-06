@@ -1,0 +1,13 @@
+Flask
+Flask-SQLAlchemy
+requests
+
+time
+random
+datetime
+sqlalchemy
+
+apscheduler
+gunicorn==19.7.1
+
+
