@@ -2,7 +2,6 @@ Flask
 Flask-SQLAlchemy
 requests
 
-random
 datetime
 sqlalchemy
 
