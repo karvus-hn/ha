@@ -19,8 +19,8 @@ url=API_URL
 engine = create_engine("postgres://zueltcpozckyiz:dcc13eeb6e9969ebb6842885ffc4d5d51b10da9c60801e26d939b77e91577b5f@ec2-46-137-156-205.eu-west-1.compute.amazonaws.com:5432/d67s20vrum3nv0", echo = True)
 
 app = Flask(__name__)
-#app.config.from_pyfile('config.py')
-db = scoped_session(sessionmaker(bind=engine))
+app.config.from_pyfile('config.py')
+#db = scoped_session(sessionmaker(bind=engine))
 ccount=5
 
 with open('english_words.json') as f:
@@ -37,7 +37,7 @@ class UInfo:
         self.rnd=0
 dct={}
 
-#db = SQLAlchemy(app)
+db = SQLAlchemy(app)
 class user(db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer(), primary_key=True)
