@@ -77,7 +77,7 @@ def GRound(chat_id,params):
                 db.session.add(tempL)
                 #db.session.flush()
                 rezC=tempL
-			db.session.commit()
+            db.session.commit()
             rt=rezC.cnt
             if (rt<=ccount):
                 break
@@ -123,7 +123,7 @@ def webhook():
                     tempU=user(tg_id=chat_id,lastans=datetime.utcnow())
                     db.session.add(tempU)
                     #db.session.flush()
-				db.session.commit()
+                db.session.commit()
             params={'chat_id':chat_id,'text':text}
             st=params['text'].split(' ')
 
@@ -141,7 +141,6 @@ def webhook():
                     data={"id":chat_id,"word":dct[chat_id].Cword,"dt":datetime.utcnow()}
                     rezL=queryB.filter(learning.user_id==chat_id,learning.word==dct[chat_id].Cword ).first()   # находим слово ++
                     rezL.cnt+=1
-                    db.session.commit()
                     params['text']='Правильно {cor} раз(а)'.format(cor=rezL.cnt)
 
                 else:
