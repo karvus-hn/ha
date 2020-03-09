@@ -105,7 +105,6 @@ def GRound(chat_id,params):
 
 @app.route('/incoming', methods=['POST'])
 def webhook():
-	global dct
     if request.method == 'POST':
         queryA=db.session.query(user)
         queryB=db.session.query(learning)
