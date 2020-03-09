@@ -170,7 +170,7 @@ def ind():
 
 @app.route('/')
 def index():
-    return ''
+    return Response(status=200)
 
 
 
