@@ -71,9 +71,9 @@ def GRound(chat_id,params):
     try:
         while rt>=ccount:
             x = random.randint(0,len(eng_words))
-            rezC=queryB.filter(learning.user_id==chat_id,learning.word==eng_words[x]['word'], ).first()  # узнаем количество
+            rezC=queryB.filter(learning.user_id==chat_id,learning.word==eng_words[x]['translation'], ).first()  # узнаем количество
             if rezC==None:
-                tempL = learning(user_id=chat_id, word=eng_words[x]['word'],lastans=datetime.utcnow(),cnt=0)
+                tempL = learning(user_id=chat_id, word=eng_words[x]['translation'],lastans=datetime.utcnow(),cnt=0)
                 db.session.add(tempL)
                 #db.session.flush()
                 rezC=tempL
