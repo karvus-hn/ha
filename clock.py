@@ -1,10 +1,20 @@
 from apscheduler.schedulers.blocking import BlockingScheduler
 
+from lab3 import db,user,datetime,json,requests,url
 sched = BlockingScheduler()
 
 @sched.scheduled_job('interval', seconds=10)
 def timed_job():
-    print('This job is run every 10 seconds.')
+    queryA = db.session.query(user)
+    for u in queryA.all():
+        dif= datetime.now()-u.lastans
+        params={'chat_id':u.tg_id,'text':'t'}
+        if dif.seconds>60:
+            params['text']='Повторяй'
+            reply = {'keyboard': [[{'text': 'NOOOOOOOOOOOOO!'}], [{'text': 'Ну,лан'}]], 'resize_keyboard': True}
+            reply = json.dumps(reply)
+            params['reply_markup'] = reply
+            requests.post(url=url + '/sendMessage', data=params)
 
 @sched.scheduled_job('cron', day_of_week='mon-fri', hour=10)
 def scheduled_job():
