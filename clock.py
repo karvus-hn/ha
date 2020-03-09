@@ -10,5 +10,4 @@ def timed_job():
 def scheduled_job():
     print('This job is run every weekday at 10am.')
 
-sched.configure(options_from_ini_file)
 sched.start()
