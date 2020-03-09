@@ -10,15 +10,17 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import create_engine
 from sqlalchemy import Table, Column
 from sqlalchemy import MetaData, String, Integer,DateTime, ForeignKey
-
+from sqlalchemy.orm import scoped_session, sessionmaker
 
 TOKEN = '1059696616:AAGcWDOvkpG2OFabcnFv9VZklF1Lj5ximxc'
 API_URL = 'https://api.telegram.org/bot1059696616:AAGcWDOvkpG2OFabcnFv9VZklF1Lj5ximxc'
 url=API_URL
 
-app = Flask(__name__)
-app.config.from_pyfile('config.py')
+engine = create_engine("postgres://zueltcpozckyiz:dcc13eeb6e9969ebb6842885ffc4d5d51b10da9c60801e26d939b77e91577b5f@ec2-46-137-156-205.eu-west-1.compute.amazonaws.com:5432/d67s20vrum3nv0", echo = True)
 
+app = Flask(__name__)
+#app.config.from_pyfile('config.py')
+db = scoped_session(sessionmaker(bind=engine))
 ccount=5
 
 with open('english_words.json') as f:
@@ -35,7 +37,7 @@ class UInfo:
         self.rnd=0
 dct={}
 
-db = SQLAlchemy(app)
+#db = SQLAlchemy(app)
 class user(db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer(), primary_key=True)
