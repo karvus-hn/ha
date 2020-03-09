@@ -141,6 +141,8 @@ def webhook():
                     data={"id":chat_id,"word":dct[chat_id].Cword,"dt":datetime.utcnow()}
                     rezL=queryB.filter(learning.user_id==chat_id,learning.word==dct[chat_id].Cword ).first()   # находим слово ++
                     rezL.cnt+=1
+                    rw=queryB.filter(learning.user_id==chat_id,learning.word==dct[chat_id].Cword ).update({'cnt':rezL.cnt})
+                    db.session.commit()
                     params['text']='Правильно {cor} раз(а)'.format(cor=rezL.cnt)
 
                 else:
