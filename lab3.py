@@ -38,6 +38,7 @@ class UInfo:
 dct={}
 
 db = SQLAlchemy(app)
+db.session.autocommit=True
 class user(db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer(), primary_key=True)
