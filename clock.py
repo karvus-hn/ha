@@ -11,7 +11,7 @@ def timed_job():
         params={'chat_id':u.tg_id,'text':'t'}
         if dif.seconds>60:
             params['text']='Повторяй'
-            reply = {'keyboard': [[{'text': 'NOOOOOOOOOOOOO!'}], [{'text': 'Ну,лан'}]], 'resize_keyboard': True}
+            reply = {'keyboard': [[{'text': 'Повторить'}], [{'text': 'Отложить'}]], 'resize_keyboard': True}
             reply = json.dumps(reply)
             params['reply_markup'] = reply
             requests.post(url=url + '/sendMessage', data=params)

@@ -128,7 +128,17 @@ def webhook():
             st=params['text'].split(' ')
 
             if params['text']=='Давай начнем!':
+                dct[chat_id].rnd = 0
+                dct[chat_id].cor = 0
                 GRound(chat_id,params)
+            elif params['text']=='Повторить':
+                dct[chat_id].rnd = 0
+                dct[chat_id].cor = 0
+                GRound(chat_id,params)
+            elif params['text']=='Отложить':
+                rez = queryA.filter(user.tg_id == chat_id).first()
+                rez.lastans = datetime.utcnow()
+                db.session.commit()
             elif params['text']=='привести пример':
                 x=dct[chat_id].pos
                 y=random.randint(0,100)
