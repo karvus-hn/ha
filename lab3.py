@@ -1,3 +1,8 @@
+# coding=utf-8
+# -*- coding: utf-8 -*-
+# vim: set fileencoding=utf-8 :
+
+
 from flask import Flask,request,Response,json
 import json
 import requests
