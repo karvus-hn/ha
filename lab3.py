@@ -75,6 +75,9 @@ def GRound(chat_id,params):
     global ccount
     queryA=db.session.query(user)
     queryB=db.session.query(learning)
+    queryC=db.session.query(settingsClass)
+    rez =queryC.first()
+    count=rez.right
     x = random.randint(0,len(eng_words))
     r = random.choices(range(0,len(eng_words)),k=3)
     rt=99
@@ -144,6 +147,9 @@ def webhook():
     if request.method == 'POST':
         queryA=db.session.query(user)
         queryB=db.session.query(learning)
+        queryC=db.session.query(settingsClass)
+        rez =queryC.first()
+        rc=rez.rc
         update = request.get_json()
         if "message" in update:
             text = update["message"]["text"]
@@ -196,8 +202,8 @@ def webhook():
                 db.session.commit()
                 requests.post(url=url+'/sendMessage',data=params)
                 dct[chat_id].rnd+=1
-                if dct[chat_id].rnd==10:
-                    params['text']='Результат : правильно - {cor}, неправильно - {unc}.'.format(cor=dct[chat_id].cor,unc=10-dct[chat_id].cor)
+                if dct[chat_id].rnd==rc:
+                    params['text']='Результат : правильно - {cor}, неправильно - {unc}.'.format(cor=dct[chat_id].cor,unc=rc-dct[chat_id].cor)
                     dct[chat_id].rnd=0
                     dct[chat_id].cor=0
                     reply={'keyboard':[[{'text':'Давай начнем!'}],[{'text':'Нет!'}]],'resize_keyboard':True}

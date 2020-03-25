@@ -6,10 +6,12 @@ sched = BlockingScheduler()
 @sched.scheduled_job('interval', seconds=60)
 def timed_job():
     queryA = db.session.query(user)
+    queryC=db.session.query(settingsClass)
+    rez =queryC.first()
     for u in queryA.all():
         dif= datetime.now()-u.lastans
         params={'chat_id':u.tg_id,'text':'t'}
-        if dif.seconds>1800:
+        if dif.seconds>rez.intr*60:
             params['text']='Повторяй'
             reply = {'keyboard': [[{'text': 'Повторить'}], [{'text': 'Отложить'}]], 'resize_keyboard': True}
             reply = json.dumps(reply)
