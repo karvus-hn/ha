@@ -34,7 +34,7 @@ class TokenHolder:
     
     def check(self):
         for c in self.cont:
-            timestamp = datetime.datetime.fromtimestamp(c['time'])
+            timestamp = datetime.fromtimestamp(c['time'])
             dif= datetime.now()-timestamp
             if dif.days>=1:
                 self.cont.remove(c)
