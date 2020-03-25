@@ -180,7 +180,7 @@ def webhook():
         update = request.get_json()
         if "message" in update:
             if tHolder.alr({'id':update["message"]["message_id"],'time':update["message"]["date"]})==True:
-                break
+                return Response(status=200)
             text = update["message"]["text"]
             chat_id = update["message"]["chat"]["id"]
             if chat_id in dct:
