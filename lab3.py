@@ -123,7 +123,7 @@ def settings_1():
         tempS=settingsClass(right=5,intr=30,rc=10)
         db.session.add(tempS)
         db.session.flush()
-    return render_template('settings.html',rcount=rez.rc,count=rez.right,intr=rez.intr)
+    return render_template('settings.html',count=rez.rc,rcount=rez.right,intr=rez.intr)
 
 @app.route('/settings/set',methods=['POST'])
 def settings_set():
@@ -131,16 +131,16 @@ def settings_set():
         queryC=db.session.query(settingsClass)
         rez =queryC.first()
         if rez==None:
-            tempS=settingsClass(right=request.form.get('count'),intr=request.form.get('intr'),rc=request.form.get('rcount'))
+            tempS=settingsClass(right=request.form.get('rcount'),intr=request.form.get('intr'),rc=request.form.get('count'))
             db.session.add(tempS)
             db.session.flush()
         else:
             rez.intr=request.form.get('intr')
-            rez.right=request.form.get('count')
-            rez.rc=request.form.get('rcount')
+            rez.right=request.form.get('rcount')
+            rez.rc=request.form.get('count')
             db.session.flush()
         db.session.commit()
-        return render_template('settings.html',rcount=rez.rc,count=rez.right,intr=rez.intr)
+        return render_template('settings.html',count=rez.rc,rcount=rez.right,intr=rez.intr)
 		
 @app.route('/incoming', methods=['POST'])
 def webhook():
