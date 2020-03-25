@@ -1,6 +1,6 @@
 from apscheduler.schedulers.blocking import BlockingScheduler
 
-from lab3 import db,user,datetime,json,requests,url
+from lab3 import db,user,datetime,json,requests,url,settingsClass
 sched = BlockingScheduler()
 
 @sched.scheduled_job('interval', seconds=60)
