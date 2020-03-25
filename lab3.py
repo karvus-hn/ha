@@ -1,195 +1,224 @@
-# coding=utf-8
-# -*- coding: utf-8 -*-
-# vim: set fileencoding=utf-8 :
+from flask import Flask,request,Response,json
+from flask import render_template
+import json
+import requests
+import time
+import random
+import sqlite3
+from datetime import datetime, date, time
 
-print("Hi")
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import create_engine
+from sqlalchemy import Table, Column
+from sqlalchemy import MetaData, String, Integer,DateTime, ForeignKey
 
-# from flask import Flask,request,Response,json
-# import json
-# import requests
-# import time
-# import random
-# import sqlite3
-# from datetime import datetime, date, time
+TOKEN = '1059696616:AAGcWDOvkpG2OFabcnFv9VZklF1Lj5ximxc'
+API_URL = 'https://api.telegram.org/bot1059696616:AAGcWDOvkpG2OFabcnFv9VZklF1Lj5ximxc'
+url=API_URL
 
-# from flask_sqlalchemy import SQLAlchemy
-# from sqlalchemy import create_engine
-# from sqlalchemy import Table, Column
-# from sqlalchemy import MetaData, String, Integer,DateTime, ForeignKey
-# from sqlalchemy.orm import scoped_session, sessionmaker
+engine = create_engine("postgres://zueltcpozckyiz:dcc13eeb6e9969ebb6842885ffc4d5d51b10da9c60801e26d939b77e91577b5f@ec2-46-137-156-205.eu-west-1.compute.amazonaws.com:5432/d67s20vrum3nv0", echo = True)
 
-# TOKEN = '1059696616:AAGcWDOvkpG2OFabcnFv9VZklF1Lj5ximxc'
-# API_URL = 'https://api.telegram.org/bot1059696616:AAGcWDOvkpG2OFabcnFv9VZklF1Lj5ximxc'
-# url=API_URL
+app = Flask(__name__)
+app.config.from_pyfile('config.py')
+#db = scoped_session(sessionmaker(bind=engine))
+ccount=5
 
-# engine = create_engine("postgres://zueltcpozckyiz:dcc13eeb6e9969ebb6842885ffc4d5d51b10da9c60801e26d939b77e91577b5f@ec2-46-137-156-205.eu-west-1.compute.amazonaws.com:5432/d67s20vrum3nv0", echo = True)
+with open('english_words.json') as f:
+    eng_words = json.load(f)
 
-# app = Flask(__name__)
-# app.config.from_pyfile('config.py')
-# #db = scoped_session(sessionmaker(bind=engine))
-# ccount=5
+random.seed(2)
 
-# with open('english_words.json') as f:
-#     eng_words = json.load(f)
+class UInfo:
+    def __init__(self):
+        self.SWord=''
+        self.Cword=''
+        self.pos=0
+        self.cor=0
+        self.rnd=0
+dct={}
 
-# random.seed(2)
+db = SQLAlchemy(app)
+db.session.autocommit=True
+class user(db.Model):
+    __tablename__ = 'users'
+    id = db.Column(db.Integer(), primary_key=True)
+    tg_id = db.Column(db.Integer(),unique=True)
+    lastans=db.Column(db.DateTime())
 
-# class UInfo:
-#     def __init__(self):
-#         self.SWord=''
-#         self.Cword=''
-#         self.pos=0
-#         self.cor=0
-#         self.rnd=0
-# dct={}
+    def __str__(self):
+        return "<User ('%s','%s', '%s')>" % (self.id, self.tg_id, self.lastans)
 
-# db = SQLAlchemy(app)
-# db.session.autocommit=True
-# class user(db.Model):
-#     __tablename__ = 'users'
-#     id = db.Column(db.Integer(), primary_key=True)
-#     tg_id = db.Column(db.Integer(),unique=True)
-#     lastans=db.Column(db.DateTime())
+class learning(db.Model):
+    __tablename__='learning'
+    word=db.Column(db.String(),primary_key=True)
+    cnt=db.Column(db.Integer())
+    lastans = db.Column(db.DateTime())
+    user_id = db.Column(db.Integer(), ForeignKey('users.tg_id'),primary_key=True)
+    user = db.relationship("user")
 
-#     def __str__(self):
-#         return "<User ('%s','%s', '%s')>" % (self.id, self.tg_id, self.lastans)
+    def __str__(self):
+        return "<Learning ('%s','%s', '%s','%s')>" % (self.user_id, self.word, self.lastans,self.cnt)
 
-# class learning(db.Model):
-#     __tablename__='learning'
-#     word=db.Column(db.String(),primary_key=True)
-#     cnt=db.Column(db.Integer())
-#     lastans = db.Column(db.DateTime())
-#     user_id = db.Column(db.Integer(), ForeignKey('users.tg_id'),primary_key=True)
-#     user = db.relationship("user")
+class settingsClass(db.Model):
+    __tablename__='settings'
+    id=db.Column(db.Integer(),primary_key=True)
+    right = db.Column(db.Integer())
+    intr = db.Column(db.Integer())
+    rc = db.Column(db.Integer())
 
-#     def __str__(self):
-#         return "<Learning ('%s','%s', '%s','%s')>" % (self.user_id, self.word, self.lastans,self.cnt)
+    def __str__(self):
+        return "<Settings ('%s',' %s','%s','%s')>" % (self.id,self.right,self.intr,self.rc)
 
-# def GRound(chat_id,params):
-#     global end_words
-#     global dct
-#     global ccount
-#     queryA=db.session.query(user)
-#     queryB=db.session.query(learning)
-#     x = random.randint(0,len(eng_words))
-#     r = random.choices(range(0,len(eng_words)),k=3)
-#     rt=99
-#     try:
-#         while rt>=ccount:
-#             x = random.randint(0,len(eng_words))
-#             rezC=queryB.filter(learning.user_id==chat_id,learning.word==eng_words[x]['translation'], ).first()  # узнаем количество
-#             if rezC==None:
-#                 tempL = learning(user_id=chat_id, word=eng_words[x]['translation'],lastans=datetime.utcnow(),cnt=0)
-#                 db.session.add(tempL)
-#                 #db.session.flush()
-#                 rezC=tempL
-#             db.session.commit()
-#             rt=rezC.cnt
-#             if (rt<=ccount):
-#                 break
-#     except:
-#         pass
-#     while x in r:
-#         r = random.choices(range(0, len(eng_words)), k=3)
-#     r.append(x)
-#     r.sort()
-#     b=[dict(text=eng_words[a]['translation']) for a in r]
-#     b.append({'text':'привести пример'})
-#     reply={'keyboard':[[b[0],b[1]],[b[2],b[3]],[b[4]]],'resize_keyboard':True}
-#     params['text']='Как переводится с английского слово "{word}"?'.format(word=eng_words[x]['word'])
-#     reply=json.dumps(reply)
-#     params['reply_markup']=reply
-#     requests.post(url=url+'/sendMessage',data=params)
-#     dct[chat_id].Cword=eng_words[x]['translation']
-#     dct[chat_id].pos=x
-#     data={"id":chat_id,"word":dct[chat_id].Cword,"dt":datetime.utcnow()}
-#     #rezC=queryB.filter(learning.user_id==chat_id,learning.word==dct[chat_id].Cword ).first()  # вставляем слово
-#     #if rezC.cnt==None:
-#     #    tempL = learning(user_id=chat_id, word=dct[chat_id].Cword,lastans=datetime.utcnow(),cnt=0)
-#     #    db.session.add(tempL)
-#     #    db.session.commit()
-#     return Response(status=200)
+def GRound(chat_id,params):
+    global end_words
+    global dct
+    global ccount
+    queryA=db.session.query(user)
+    queryB=db.session.query(learning)
+    x = random.randint(0,len(eng_words))
+    r = random.choices(range(0,len(eng_words)),k=3)
+    rt=99
+    try:
+        f = queryB.filter(learning.user_id==chat_id,learning.cnt<=count ).all()
+        if(len(f)==0):
+            tempL = learning(user_id=chat_id, word=eng_words[x]['word'],lastans=datetime.utcnow(),cnt=0)
+            db.session.add(tempL)
+            db.session.commit()
+            f.append(tempL)
+        x = random.randint(0,len(f)-1)
+        a=next(e for e in eng_words if e['translation'] == f[x].word)
+        x=eng_words.index(a)
 
+    except:
+        pass
+    while x in r:
+        r = random.choices(range(0, len(eng_words)), k=3)
+    r.append(x)
+    r.sort()
+    b=[dict(text=eng_words[a]['translation']) for a in r]
+    b.append({'text':'привести пример'})
+    reply={'keyboard':[[b[0],b[1]],[b[2],b[3]],[b[4]]],'resize_keyboard':True}
+    params['text']='Как переводится с английского слово "{word}"?'.format(word=eng_words[x]['word'])
+    reply=json.dumps(reply)
+    params['reply_markup']=reply
+    requests.post(url=url+'/sendMessage',data=params)
+    dct[chat_id].Cword=eng_words[x]['translation']
+    dct[chat_id].pos=x
+    data={"id":chat_id,"word":dct[chat_id].Cword,"dt":datetime.utcnow()}
+    #rezC=queryB.filter(learning.user_id==chat_id,learning.word==dct[chat_id].Cword ).first()  # вставляем слово
+    #if rezC.cnt==None:
+    #    tempL = learning(user_id=chat_id, word=dct[chat_id].Cword,lastans=datetime.utcnow(),cnt=0)
+    #    db.session.add(tempL)
+    #    db.session.commit()
+    return Response(status=200)
 
-# @app.route('/incoming', methods=['POST'])
-# def webhook():
-#     if request.method == 'POST':
-#         queryA=db.session.query(user)
-#         queryB=db.session.query(learning)
-#         update = request.get_json()
-#         if "message" in update:
-#             text = update["message"]["text"]
-#             chat_id = update["message"]["chat"]["id"]
-#             if chat_id in dct:
-#                 pass
-#             else:
-#                 dct[chat_id]=UInfo()
-#                 rez =queryA.filter(user.tg_id==chat_id).first()                 # находим пользователя или вставляем
-#                 if rez == None:
-#                     tempU=user(tg_id=chat_id,lastans=datetime.utcnow())
-#                     db.session.add(tempU)
-#                     #db.session.flush()
-#                 db.session.commit()
-#             params={'chat_id':chat_id,'text':text}
-#             st=params['text'].split(' ')
+@app.route('/settings')
+def settings_1():
+    queryC=db.session.query(settingsClass)
+    rez =queryC.first()
+    if rez==None:
+        tempS=settingsClass(right=5,intr=30,rc=10)
+        db.session.add(tempS)
+        db.session.flush()
+    return render_template('settings.html',rcount=rez.rc,count=rez.right,intr=rez.intr)
 
-#             if params['text']=='Давай начнем!':
-#                 dct[chat_id].rnd = 0
-#                 dct[chat_id].cor = 0
-#                 GRound(chat_id,params)
-#             elif params['text']=='Повторить':
-#                 dct[chat_id].rnd = 0
-#                 dct[chat_id].cor = 0
-#                 GRound(chat_id,params)
-#             elif params['text']=='Отложить':
-#                 rez = queryA.filter(user.tg_id == chat_id).first()
-#                 rez.lastans = datetime.utcnow()
-#                 db.session.commit()
-#             elif params['text']=='привести пример':
-#                 x=dct[chat_id].pos
-#                 y=random.randint(0,100)
-#                 params['text']=eng_words[x]['examples'][y%len(eng_words[x]['examples'])]
-#                 requests.post(url=url+'/sendMessage',data=params)
-#             else :
-#                 if params['text']==dct[chat_id].Cword:
-#                     dct[chat_id].cor+=1
-#                     dt=datetime.utcnow()
-#                     data={"id":chat_id,"word":dct[chat_id].Cword,"dt":datetime.utcnow()}
-#                     rezL=queryB.filter(learning.user_id==chat_id,learning.word==dct[chat_id].Cword ).first()   # находим слово ++
-#                     rezL.cnt+=1
-#                     rw=queryB.filter(learning.user_id==chat_id,learning.word==dct[chat_id].Cword ).update({'cnt':rezL.cnt})
-#                     db.session.commit()
-#                     params['text']='Правильно {cor} раз(а)'.format(cor=rezL.cnt)
+@app.route('/settings/set',methods=['POST'])
+def settings_set():
+    if request.method == 'POST':
+        queryC=db.session.query(settingsClass)
+        rez =queryC.first()
+        if rez==None:
+            tempS=settingsClass(right=request.form.get('rcount'),intr=request.form.get('intr'),rc=request.form.get('count'))
+            db.session.add(tempS)
+            db.session.flush()
+        else:
+            rez.intr=request.form.get('intr')
+            rez.right=request.form.get('rcount')
+            rez.rc=request.form.get('count')
+            db.session.flush()
+        db.session.commit()
+        return render_template('settings.html',rcount=rez.rc,count=rez.right,intr=rez.intr)
+		
+@app.route('/incoming', methods=['POST'])
+def webhook():
+    if request.method == 'POST':
+        queryA=db.session.query(user)
+        queryB=db.session.query(learning)
+        update = request.get_json()
+        if "message" in update:
+            text = update["message"]["text"]
+            chat_id = update["message"]["chat"]["id"]
+            if chat_id in dct:
+                pass
+            else:
+                dct[chat_id]=UInfo()
+                rez =queryA.filter(user.tg_id==chat_id).first()                 # находим пользователя или вставляем
+                if rez == None:
+                    tempU=user(tg_id=chat_id,lastans=datetime.utcnow())
+                    db.session.add(tempU)
+                    #db.session.flush()
+                db.session.commit()
+            params={'chat_id':chat_id,'text':text}
+            st=params['text'].split(' ')
 
-#                 else:
-#                     params['text']='Неправильно.Правильный ответ {word}.'.format(word=dct[chat_id].Cword)
-#                 rez =queryA.filter(user.tg_id==chat_id).first()
-#                 rez.lastans=datetime.utcnow()
-#                 db.session.commit()
-#                 requests.post(url=url+'/sendMessage',data=params)
-#                 dct[chat_id].rnd+=1
-#                 if dct[chat_id].rnd==10:
-#                     params['text']='Результат : правильно - {cor}, неправильно - {unc}.'.format(cor=dct[chat_id].cor,unc=10-dct[chat_id].cor)
-#                     dct[chat_id].rnd=0
-#                     dct[chat_id].cor=0
-#                     reply={'keyboard':[[{'text':'Давай начнем!'}],[{'text':'Нет!'}]],'resize_keyboard':True}
-#                     reply=json.dumps(reply)
-#                     params['reply_markup']=reply
-#                     requests.post(url=url+'/sendMessage',data=params)
-#                 else:
-#                     GRound(chat_id,params)
-#         return Response(status=200)
-#     else:
-#         return Response(status=400)
+            if params['text']=='Давай начнем!':
+                dct[chat_id].rnd = 0
+                dct[chat_id].cor = 0
+                GRound(chat_id,params)
+            elif params['text']=='Повторить':
+                dct[chat_id].rnd = 0
+                dct[chat_id].cor = 0
+                GRound(chat_id,params)
+            elif params['text']=='Отложить':
+                rez = queryA.filter(user.tg_id == chat_id).first()
+                rez.lastans = datetime.utcnow()
+                db.session.commit()
+            elif params['text']=='привести пример':
+                x=dct[chat_id].pos
+                y=random.randint(0,100)
+                params['text']=eng_words[x]['examples'][y%len(eng_words[x]['examples'])]
+                requests.post(url=url+'/sendMessage',data=params)
+            else :
+                if params['text']==dct[chat_id].Cword:
+                    dct[chat_id].cor+=1
+                    dt=datetime.utcnow()
+                    data={"id":chat_id,"word":dct[chat_id].Cword,"dt":datetime.utcnow()}
+                    rezL=queryB.filter(learning.user_id==chat_id,learning.word==dct[chat_id].Cword ).first()   # находим слово ++
+                    rezL.cnt+=1
+                    rw=queryB.filter(learning.user_id==chat_id,learning.word==dct[chat_id].Cword ).update({'cnt':rezL.cnt})
+                    db.session.commit()
+                    params['text']='Правильно {cor} раз(а)'.format(cor=rezL.cnt)
 
-# @app.route('/init')
-# def ind():
+                else:
+                    params['text']='Неправильно.Правильный ответ {word}.'.format(word=dct[chat_id].Cword)
+                rez =queryA.filter(user.tg_id==chat_id).first()
+                rez.lastans=datetime.utcnow()
+                db.session.commit()
+                requests.post(url=url+'/sendMessage',data=params)
+                dct[chat_id].rnd+=1
+                if dct[chat_id].rnd==10:
+                    params['text']='Результат : правильно - {cor}, неправильно - {unc}.'.format(cor=dct[chat_id].cor,unc=10-dct[chat_id].cor)
+                    dct[chat_id].rnd=0
+                    dct[chat_id].cor=0
+                    reply={'keyboard':[[{'text':'Давай начнем!'}],[{'text':'Нет!'}]],'resize_keyboard':True}
+                    reply=json.dumps(reply)
+                    params['reply_markup']=reply
+                    requests.post(url=url+'/sendMessage',data=params)
+                else:
+                    GRound(chat_id,params)
+        return Response(status=200)
+    else:
+        return Response(status=400)
 
-#     return ''
+@app.route('/init')
+def ind():
 
-# @app.route('/')
-# def index():
-#     return Response(status=200)
+    return ''
+
+@app.route('/')
+def index():
+    return 'ИВТ-41-16 Петров Д.С. <br> Бот для заучивания'
+
 
 
 

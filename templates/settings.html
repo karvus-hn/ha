@@ -1,0 +1,14 @@
+<html >
+<body>
+    <form method="POST" action="/settings/set">
+        Вывод примеров использования слова:<br>
+        Время повтора (минут):
+        <input type="number" name="intr" value={{intr}} ><br>
+        Количество слов в раунде:
+        <input type="number" name="count" value={{count}}><br>
+        Количество правильных ответов, после которых считается, что слово выучено :
+        <input type="number" name="rcount" value={{rcount}}><br>
+        <input type="submit" value="Установить">
+    </form>
+</body>
+</html>
