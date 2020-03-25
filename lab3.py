@@ -131,13 +131,13 @@ def settings_set():
         queryC=db.session.query(settingsClass)
         rez =queryC.first()
         if rez==None:
-            tempS=settingsClass(right=request.form.get('rcount'),intr=request.form.get('intr'),rc=request.form.get('count'))
+            tempS=settingsClass(right=request.form.get('count'),intr=request.form.get('intr'),rc=request.form.get('rcount'))
             db.session.add(tempS)
             db.session.flush()
         else:
             rez.intr=request.form.get('intr')
-            rez.right=request.form.get('rcount')
-            rez.rc=request.form.get('count')
+            rez.right=request.form.get('count')
+            rez.rc=request.form.get('rcount')
             db.session.flush()
         db.session.commit()
         return render_template('settings.html',rcount=rez.rc,count=rez.right,intr=rez.intr)
