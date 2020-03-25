@@ -28,6 +28,33 @@ with open('english_words.json') as f:
 
 random.seed(2)
 
+class TokenHolder:
+    def __init__(self):
+        self.cont=[]
+    
+    def check(self):
+        for c in self.cont:
+            timestamp = datetime.datetime.fromtimestamp(c['time'])
+            dif= datetime.now()-timestamp
+            if dif.days>=1:
+                self.cont.remove(c)
+
+
+    def ins(self,it):
+        self.check()
+        self.cont.append(it)
+
+    def alr(self, it):
+        try:
+            a = next(e for e in self.cont if e['id'] == it['id'])
+        except:
+            self.ins(it)
+            return False
+        return True
+        
+
+tHolder=TokenHolder()
+
 class UInfo:
     def __init__(self):
         self.SWord=''
@@ -152,6 +179,8 @@ def webhook():
         rc=rez.rc
         update = request.get_json()
         if "message" in update:
+            if tHolder.alr({'id':update["message"]["message_id"],'time':update["message"]["date"]})==True:
+                break
             text = update["message"]["text"]
             chat_id = update["message"]["chat"]["id"]
             if chat_id in dct:
