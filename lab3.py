@@ -201,11 +201,11 @@ def webhook():
             if params['text']=='Давай начнем!':
                 dct[chat_id].rnd = 0
                 dct[chat_id].cor = 0
-                GRound(chat_id,params)
+                return GRound(chat_id,params)
             elif params['text']=='Повторить':
                 dct[chat_id].rnd = 0
                 dct[chat_id].cor = 0
-                GRound(chat_id,params)
+                return GRound(chat_id,params)
             elif params['text']=='Отложить':
                 rez = queryA.filter(user.tg_id == chat_id).first()
                 rez.lastans = datetime.utcnow()
@@ -242,7 +242,7 @@ def webhook():
                     params['reply_markup']=reply
                     requests.post(url=url+'/sendMessage',data=params)
                 else:
-                    GRound(chat_id,params)
+                    return GRound(chat_id,params)
         return Response(status=200)
     else:
         return Response(status=400)
