@@ -218,6 +218,9 @@ def webhook():
                 requests.post(url=url+'/sendMessage',data=params)
             else :
                 print('Пришло {word}.'.format(word=params['text']))
+                rez =queryA.filter(user.tg_id==chat_id).first()
+                rez.lastans=datetime.utcnow()
+                db.session.commit()
                 if params['text']==dct[chat_id].Cword:
                     dct[chat_id].cor+=1
                     dt=datetime.utcnow()
@@ -229,8 +232,6 @@ def webhook():
 
                 else:
                     params['text']='Неправильно.Правильный ответ {word}.'.format(word=dct[chat_id].Cword)
-                rez =queryA.filter(user.tg_id==chat_id).first()
-                rez.lastans=datetime.utcnow()
                 db.session.commit()
                 requests.post(url=url+'/sendMessage',data=params)
                 dct[chat_id].rnd+=1
