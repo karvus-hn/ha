@@ -109,7 +109,7 @@ def GRound(chat_id,params):
     r = random.choices(range(0,len(eng_words)),k=3)
     rt=99
     try:
-        f = queryB.filter(learning.user_id==chat_id,learning.cnt<=count ).all()
+        f = queryB.filter(learning.user_id==chat_id,learning.cnt<count ).all()
         if(len(f)==0):
             tempL = learning(user_id=chat_id, word=eng_words[x]['word'],lastans=datetime.utcnow(),cnt=0)
             db.session.add(tempL)
@@ -171,6 +171,7 @@ def settings_set():
 		
 @app.route('/incoming', methods=['POST'])
 def webhook():
+    global dct
     if request.method == 'POST':
         queryA=db.session.query(user)
         queryB=db.session.query(learning)
