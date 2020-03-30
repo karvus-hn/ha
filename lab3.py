@@ -135,7 +135,7 @@ def GRound(chat_id,params):
     requests.post(url=url+'/sendMessage',data=params)
     dct[chat_id].Cword=eng_words[x]['translation']
     dct[chat_id].pos=x
-    print('Ждем {word}.'.format(word=dct[chat_id].Cword)
+    print('Ждем {word}.'.format(word=dct[chat_id].Cword))
     data={"id":chat_id,"word":dct[chat_id].Cword,"dt":datetime.utcnow()}
     #rezC=queryB.filter(learning.user_id==chat_id,learning.word==dct[chat_id].Cword ).first()  # вставляем слово
     #if rezC.cnt==None:
@@ -217,7 +217,7 @@ def webhook():
                 params['text']=eng_words[x]['examples'][y%len(eng_words[x]['examples'])]
                 requests.post(url=url+'/sendMessage',data=params)
             else :
-                print('Пришло {word}.'.format(word=params['text'])
+                print('Пришло {word}.'.format(word=params['text']))
                 if params['text']==dct[chat_id].Cword:
                     dct[chat_id].cor+=1
                     dt=datetime.utcnow()
