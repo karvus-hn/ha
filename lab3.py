@@ -113,8 +113,9 @@ def GRound(chat_id,params):
         if(len(f)==0):
             tempL = learning(user_id=chat_id, word=eng_words[x]['translation'],lastans=datetime.utcnow(),cnt=0)
             db.session.add(tempL)
-            db.session.commit()
+            db.session.flush()
             f.append(tempL)
+        db.session.commit()
         x = random.randint(0,len(f)-1)
         a=next(e for e in eng_words if e['translation'] == f[x].word)
         x=eng_words.index(a)
