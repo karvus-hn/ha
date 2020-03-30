@@ -111,7 +111,7 @@ def GRound(chat_id,params):
     try:
         f = queryB.filter(learning.user_id==chat_id,learning.cnt<count ).all()
         if(len(f)==0):
-            tempL = learning(user_id=chat_id, word=eng_words[x]['word'],lastans=datetime.utcnow(),cnt=0)
+            tempL = learning(user_id=chat_id, word=eng_words[x]['translation'],lastans=datetime.utcnow(),cnt=0)
             db.session.add(tempL)
             db.session.commit()
             f.append(tempL)
