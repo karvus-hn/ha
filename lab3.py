@@ -16,7 +16,7 @@ TOKEN = '1059696616:AAGcWDOvkpG2OFabcnFv9VZklF1Lj5ximxc'
 API_URL = 'https://api.telegram.org/bot1059696616:AAGcWDOvkpG2OFabcnFv9VZklF1Lj5ximxc'
 url=API_URL
 
-engine = create_engine("postgres://zueltcpozckyiz:dcc13eeb6e9969ebb6842885ffc4d5d51b10da9c60801e26d939b77e91577b5f@ec2-46-137-156-205.eu-west-1.compute.amazonaws.com:5432/d67s20vrum3nv0", echo = True)
+engine = create_engine("postgres://zueltcpozckyiz:dcc13eeb6e9969ebb6842885ffc4d5d51b10da9c60801e26d939b77e91577b5f@ec2-46-137-156-205.eu-west-1.compute.amazonaws.com:5432/d67s20vrum3nv0", echo = False)
 
 app = Flask(__name__)
 app.config.from_pyfile('config.py')
@@ -135,6 +135,7 @@ def GRound(chat_id,params):
     requests.post(url=url+'/sendMessage',data=params)
     dct[chat_id].Cword=eng_words[x]['translation']
     dct[chat_id].pos=x
+    print('Ждем {word}.'.format(word=dct[chat_id].Cword)
     data={"id":chat_id,"word":dct[chat_id].Cword,"dt":datetime.utcnow()}
     #rezC=queryB.filter(learning.user_id==chat_id,learning.word==dct[chat_id].Cword ).first()  # вставляем слово
     #if rezC.cnt==None:
@@ -216,6 +217,7 @@ def webhook():
                 params['text']=eng_words[x]['examples'][y%len(eng_words[x]['examples'])]
                 requests.post(url=url+'/sendMessage',data=params)
             else :
+                print('Пришло {word}.'.format(word=params['text'])
                 if params['text']==dct[chat_id].Cword:
                     dct[chat_id].cor+=1
                     dt=datetime.utcnow()
