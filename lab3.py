@@ -154,6 +154,9 @@ def settings_1():
         db.session.flush()
     return render_template('settings.html',count=rez.rc,rcount=rez.right,intr=rez.intr)
 
+@app.route('/debug')
+def debug():
+    return render_template('debug.html',lst=dct)
 @app.route('/settings/set',methods=['POST'])
 def settings_set():
     if request.method == 'POST':
