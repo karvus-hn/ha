@@ -128,13 +128,13 @@ def GRound(chat_id,params):
     r.sort()
     b=[dict(text=eng_words[a]['translation']) for a in r]
     b.append({'text':'привести пример'})
+    dct[chat_id].Cword=eng_words[x]['translation']
+    dct[chat_id].pos=x
     reply={'keyboard':[[b[0],b[1]],[b[2],b[3]],[b[4]]],'resize_keyboard':True}
     params['text']='Как переводится с английского слово "{word}"?'.format(word=eng_words[x]['word'])
     reply=json.dumps(reply)
     params['reply_markup']=reply
     requests.post(url=url+'/sendMessage',data=params)
-    dct[chat_id].Cword=eng_words[x]['translation']
-    dct[chat_id].pos=x
     print('Ждем {word}.'.format(word=dct[chat_id].Cword))
     data={"id":chat_id,"word":dct[chat_id].Cword,"dt":datetime.utcnow()}
     #rezC=queryB.filter(learning.user_id==chat_id,learning.word==dct[chat_id].Cword ).first()  # вставляем слово
