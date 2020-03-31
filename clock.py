@@ -18,6 +18,12 @@ def timed_job():
             params['reply_markup'] = reply
             requests.post(url=url + '/sendMessage', data=params)
 
+@sched.scheduled_job('interval', seconds=60)
+def wake_up():
+    r = requests.get('https://lab6py.herokuapp.com')
+    print 'https://lab6py.herokuapp.com'
+    print r.status_code
+
 @sched.scheduled_job('cron', day_of_week='mon-fri', hour=10)
 def scheduled_job():
     print('This job is run every weekday at 10am.')

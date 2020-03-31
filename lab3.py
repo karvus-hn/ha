@@ -174,6 +174,7 @@ def settings_set():
 @app.route('/incoming', methods=['POST'])
 def webhook():
     global dct
+    global tHolder
     if request.method == 'POST':
         queryA=db.session.query(user)
         queryB=db.session.query(learning)
