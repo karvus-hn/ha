@@ -142,7 +142,6 @@ def GRound(chat_id,params):
     #    tempL = learning(user_id=chat_id, word=dct[chat_id].Cword,lastans=datetime.utcnow(),cnt=0)
     #    db.session.add(tempL)
     #    db.session.commit()
-    return Response(status=200)
 
 @app.route('/settings')
 def settings_1():
@@ -207,12 +206,12 @@ def webhook():
                 dct[chat_id].rnd = 0
                 dct[chat_id].cor = 0
                 dct[chat_id].Cword=''
-                return GRound(chat_id,params)
+                GRound(chat_id,params)
             elif params['text']=='Повторить':
                 dct[chat_id].rnd = 0
                 dct[chat_id].cor = 0
                 dct[chat_id].Cword=''
-                return GRound(chat_id,params)
+                GRound(chat_id,params)
             elif params['text']=='Отложить':
                 rez = queryA.filter(user.tg_id == chat_id).first()
                 rez.lastans = datetime.utcnow()
@@ -250,7 +249,7 @@ def webhook():
                     params['reply_markup']=reply
                     requests.post(url=url+'/sendMessage',data=params)
                 else:
-                    return GRound(chat_id,params)
+                    GRound(chat_id,params)
         return Response(status=200)
     else:
         return Response(status=400)
