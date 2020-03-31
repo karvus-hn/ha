@@ -237,7 +237,6 @@ def webhook():
 
                 else:
                     params['text']='Неправильно.Правильный ответ {word}.'.format(word=dct[chat_id].Cword)
-                db.session.commit()
                 requests.post(url=url+'/sendMessage',data=params)
                 dct[chat_id].rnd+=1
                 if dct[chat_id].rnd==rc:
@@ -250,6 +249,10 @@ def webhook():
                     requests.post(url=url+'/sendMessage',data=params)
                 else:
                     GRound(chat_id,params)
+        try:
+            db.session.commit()
+        except:
+            pass
         return Response(status=200)
     else:
         return Response(status=400)
