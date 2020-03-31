@@ -21,8 +21,8 @@ def timed_job():
 @sched.scheduled_job('interval', seconds=60)
 def wake_up():
     r = requests.get('https://lab6py.herokuapp.com')
-    print 'https://lab6py.herokuapp.com'
-    print r.status_code
+    print ('https://lab6py.herokuapp.com')
+    print (r.status_code)
 
 @sched.scheduled_job('cron', day_of_week='mon-fri', hour=10)
 def scheduled_job():
