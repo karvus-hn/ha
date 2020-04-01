@@ -2,12 +2,12 @@
 <body>
     <ul >
 		{% for item in lst %}
-			<li > {{ item.Cword }} </li>
+			<li > {{item['Cword']}} </li>
 		{% endfor %}
     </ul>
 	<ul >
 		{% for item in th %}
-			<li > {{ item[id] }}_{{ item[time] }} </li>
+			<li > {{item['id']}}_{{item['time']}} </li>
 		{% endfor %}
     </ul>
 </body>
