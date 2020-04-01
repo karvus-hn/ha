@@ -219,7 +219,7 @@ def webhook():
                 reply=json.dumps(reply)
                 params['reply_markup']=reply
                 requests.post(url=url+'/sendMessage',data=params)
-            if params['text']=='Давай начнем!':
+            elif params['text']=='Давай начнем!':
                 dct[chat_id].rnd = 0
                 dct[chat_id].cor = 0
                 dct[chat_id].Cword=''
