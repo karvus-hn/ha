@@ -1,8 +1,8 @@
 <html >
 <body>
     <ul >
-		{% for item in lst %}
-			<li > {{item['Cword']}} </li>
+		{% for item in lst.items() %}
+			<li > {{item.rnd}} </li>
 		{% endfor %}
     </ul>
 	<ul >
