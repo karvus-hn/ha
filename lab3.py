@@ -63,7 +63,7 @@ class UInfo:
         self.cor=0
         self.rnd=0
         self.prevqn=0
-        self.curqn=datetime.timestamp()
+        self.curqn=datetime.now().timestamp()
 dct={}
 
 db = SQLAlchemy(app)
@@ -133,7 +133,7 @@ def GRound(chat_id,params):
     dct[chat_id].Cword=eng_words[x]['translation']
     dct[chat_id].pos=x
     dct[chat_id].prevqn=dct[chat_id].curqn
-    dct[chat_id].curqn=datetime.timestamp()
+    dct[chat_id].curqn=datetime.now().timestamp()
     reply={'keyboard':[[b[0],b[1]],[b[2],b[3]],[b[4]]],'resize_keyboard':True}
     params['text']='Как переводится с английского слово "{word}"?'.format(word=eng_words[x]['word'])
     reply=json.dumps(reply)
