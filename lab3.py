@@ -155,7 +155,9 @@ def settings_1():
 
 @app.route('/debug')
 def debug():
-    return render_template('debug.html',lst=dct)
+    global dct
+    global tHolder
+    return render_template('debug.html',lst=dct,th=tHolder.cont)
 @app.route('/settings/set',methods=['POST'])
 def settings_set():
     if request.method == 'POST':
