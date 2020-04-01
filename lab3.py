@@ -232,6 +232,10 @@ def webhook():
                 rez =queryA.filter(user.tg_id==chat_id).first()
                 rez.lastans=datetime.utcnow()
                 db.session.commit()
+                if update["message"]["date"]<dct[chat_id].curqn:
+                    params['text']='Хорошая попытка,но рано'
+                    requests.post(url=url+'/sendMessage',data=params)
+                    return Response(status=200)
                 if params['text']==dct[chat_id].Cword:
                     dct[chat_id].cor+=1
                     dt=datetime.utcnow()
