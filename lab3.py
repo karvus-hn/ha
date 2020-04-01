@@ -110,13 +110,19 @@ def GRound(chat_id,params):
     x = random.randint(0,len(eng_words))
     r = random.choices(range(0,len(eng_words)),k=3)
     rt=99
+
     try:
-        f = queryB.filter(learning.user_id==chat_id,learning.cnt<count ).all()
-        if(len(f)==0):
+        rezC=queryB.filter(learning.user_id==chat_id,learning.word==eng_words[x]['translation'] ).first()  # узнаем есть ли слово,вставляем если надо
+        if rezC==None:
             tempL = learning(user_id=chat_id, word=eng_words[x]['translation'],lastans=datetime.utcnow(),cnt=0)
             db.session.add(tempL)
             db.session.flush()
-            f.append(tempL)
+        f = queryB.filter(learning.user_id==chat_id,learning.cnt<count ).all() # получаем недоученные слова
+        # if(len(f)==0):
+            # tempL = learning(user_id=chat_id, word=eng_words[x]['translation'],lastans=datetime.utcnow(),cnt=0)
+            # db.session.add(tempL)
+            # db.session.flush()
+            # f.append(tempL)
         db.session.commit()
         x = random.randint(0,len(f)-1)
         a=next(e for e in eng_words if e['translation'] == f[x].word)
@@ -207,7 +213,12 @@ def webhook():
                 db.session.commit()
             params={'chat_id':chat_id,'text':text}
             st=params['text'].split(' ')
-
+            if params['text']=='/start':
+                params['text']="Бот для заучивания иностранных слов.Для начала корректной работы надо ввести 'Давай начнем' или нажать кнопку,которая должна появиться"
+                reply={'keyboard':[[{'text':'Давай начнем!'}]],'resize_keyboard':True}
+                reply=json.dumps(reply)
+                params['reply_markup']=reply
+                requests.post(url=url+'/sendMessage',data=params)
             if params['text']=='Давай начнем!':
                 dct[chat_id].rnd = 0
                 dct[chat_id].cor = 0
@@ -253,7 +264,7 @@ def webhook():
                     params['text']='Результат : правильно - {cor}, неправильно - {unc}.'.format(cor=dct[chat_id].cor,unc=rc-dct[chat_id].cor)
                     dct[chat_id].rnd=0
                     dct[chat_id].cor=0
-                    reply={'keyboard':[[{'text':'Давай начнем!'}],[{'text':'Нет!'}]],'resize_keyboard':True}
+                    reply={'keyboard':[[{'text':'Давай начнем!'}]],'resize_keyboard':True}
                     reply=json.dumps(reply)
                     params['reply_markup']=reply
                     requests.post(url=url+'/sendMessage',data=params)
@@ -274,7 +285,7 @@ def ind():
 
 @app.route('/')
 def index():
-    return 'ИВТ-41-16 Петров Д.С. <br> Бот для заучивания'
+    return 'ИВТ-41-16 Петров Д.С. <br> Бот для заучивания иностранных слов'
 
 
 
