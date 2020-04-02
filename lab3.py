@@ -285,7 +285,8 @@ def ind():
 
 @app.route('/')
 def index():
-    return 'ИВТ-41-16 Петров Д.С. <br> Бот для заучивания иностранных слов'
+    return render_template('index.html')
+    #return 'ИВТ-41-16 Петров Д.С. <br> Бот для заучивания иностранных слов'
 
 
 
