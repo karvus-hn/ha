@@ -264,6 +264,8 @@ def webhook():
                     params['text']='Результат : правильно - {cor}, неправильно - {unc}.'.format(cor=dct[chat_id].cor,unc=rc-dct[chat_id].cor)
                     dct[chat_id].rnd=0
                     dct[chat_id].cor=0
+                    dct[chat_id].prevqn=dct[chat_id].curqn
+                    dct[chat_id].curqn=datetime.now().timestamp()
                     reply={'keyboard':[[{'text':'Давай начнем!'}]],'resize_keyboard':True}
                     reply=json.dumps(reply)
                     params['reply_markup']=reply
